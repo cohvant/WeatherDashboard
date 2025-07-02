@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8" />
+
+  <title>Anold Madzore Weather Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- FontAwesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet" />
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- MY CSS -->
+  <link href="css.css" rel="stylesheet" media='all' />
+
+
+</head>
+<body>
+  <!-- Fixed Header -->
+  <header id="mainHeader" role="banner" aria-label="Main header">
+    <div class="app-title"><i class="fas fa-cloud-sun-rain"></i> ANOLD MADZORE WEATHER DASHBOARD</div>
+    <div class="developer-contact">
+      <i class="fas fa-phone"></i> +263 78 770 2386 | Anold Madzore
+    </div>
+  </header>
+  <div id="appContainer" role="main">
+    <!-- About Page -->
+    <div id="aboutPage" class="w-100 p-4 d-flex flex-column align-items-center justify-content-center" aria-label="About page">
+      <div class="text-center mb-4">
+        <i class="fas fa-cloud-sun-rain weather-icon"></i>
+        <div class="app-title mt-2">ANOLD MADZORE WEATHER DASHBOARD</div>
+        <p class="lead mb-2">The weather dashboard for Chitungwiza, Zimbabwe and anywhere in the world.</p>
+        <p style="font-size:1.05rem;">
+          <b>Powered by:</b>
+          <a href="https://open-meteo.com/" target="_blank" rel="noopener" style="color:#007bff;text-decoration:underline;">Open-Meteo Forecast API</a>
+        </p>
+      </div>
+      <div class="card shadow-sm mb-3" style="max-width: 600px;">
+        <div class="card-body">
+          <h5 class="card-title"><i class="fas fa-info-circle"></i> About</h5>
+          <p>The weather dashboard lets you:</p>
+          <ul>
+            <li>View current weather and 5-day forecast for any latitude and longitude</li>
+            <li>Manage favourite locations</li>
+            <li>Generate weather reports with beautiful charts</li>
+            <li>Access a user guide</li>
+            <li>Contact the system developer directly</li>
+          </ul>
+          <p>
+            <b>API in use:</b> <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo Forecast API</a><br />
+            <span class="text-muted" style="font-size:0.95rem;">(No API key required)</span>
+          </p>
+        </div>
+      </div>
+      <div class="d-grid" style="max-width: 300px;">
+        <button class="btn btn-primary btn-lg" id="aboutToLogin" aria-label="Proceed to login">
+          <i class="fas fa-sign-in-alt"></i> Proceed to Login
+        </button>
+      </div>
+    </div>
+    <!-- Login Page -->
+    <div id="loginPage" class="w-100 d-none d-flex align-items-center justify-content-center" aria-label="Login page">
+      <div class="card shadow-sm mx-auto" style="max-width: 400px; width: 100%;">
+        <div class="card-body">
+          <h4 class="mb-3 text-center"><i class="fas fa-user-lock"></i> Login</h4>
+          <form id="loginForm" novalidate>
+            <div class="mb-3">
+              <label class="form-label" for="username">
+                <i class="fas fa-user"></i> Username <span class="text-muted">(admin)</span>
+              </label>
+              <input type="text" class="form-control" id="username" placeholder="Enter username" required autocomplete="username" />
+              <div class="invalid-feedback">Username is required.</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="password">
+                <i class="fas fa-key"></i> Password <span class="text-muted">(admin)</span>
+              </label>
+              <input type="password" class="form-control" id="password" placeholder="Enter password" required autocomplete="current-password" />
+              <div class="invalid-feedback">Password is required.</div>
+            </div>
+            <button class="btn btn-success w-100" type="submit" aria-label="Login button">
+              <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Dashboard -->
+    <div id="dashboardPage" class="w-100 d-none" aria-label="Dashboard">
+      <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
+        <div class="sidebar-header">
+          <i class="fas fa-user-circle"></i>
+          <div class="username mt-1">admin</div>
+        </div>
+        <nav id="sidebarNav" class="nav flex-column" aria-label="Main navigation">
+          <a href="#" class="nav-link active" data-section="currentWeather" role="tab" aria-selected="true" tabindex="0"><i class="fas fa-cloud-sun"></i> Current Weather</a>
+          <a href="#" class="nav-link" data-section="forecast" role="tab" aria-selected="false" tabindex="-1"><i class="fas fa-calendar-day"></i> 5-Day Forecast</a>
+          <a href="#" class="nav-link" data-section="favourites" role="tab" aria-selected="false" tabindex="-1"><i class="fas fa-star"></i> Favourites</a>
+          <a href="#" class="nav-link" data-section="reports" role="tab" aria-selected="false" tabindex="-1"><i class="fas fa-chart-bar"></i> Reports</a>
+          <a href="#" class="nav-link" data-section="userGuide" role="tab" aria-selected="false" tabindex="-1"><i class="fas fa-question-circle"></i> User Guide</a>
+          <a href="#" class="nav-link logout-link" id="logoutBtn" tabindex="0"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+      </aside>
+      <main class="dashboard-main" role="tabpanel">
+        <!-- Sections -->
+        <section id="currentWeatherSection" class="active" tabindex="0" aria-label="Current weather section">
+          <h3><i class="fas fa-cloud-sun"></i> Current Weather</h3>
+          <form id="currentWeatherForm" class="row g-2 align-items-center mb-3" style="max-width:550px;">
+            <div class="col-6 col-sm-5">
+              <input type="number" step="any" class="form-control" id="currentLat" placeholder="Latitude" value="-17.9935" required />
+            </div>
+            <div class="col-6 col-sm-5">
+              <input type="number" step="any" class="form-control" id="currentLon" placeholder="Longitude" value="31.0487" required />
+            </div>
+            <div class="col-12 col-sm-2 d-grid">
+              <button class="btn btn-primary" type="submit"><i class="fas fa-sync"></i> Get</button>
+            </div>
+          </form>
+          <div id="currentWeatherContent" class="mt-2" aria-live="polite" aria-atomic="true"></div>
+        </section>
+        <section id="forecastSection" tabindex="0" aria-label="5-day forecast section">
+          <h3><i class="fas fa-calendar-day"></i> 5-Day Forecast</h3>
+          <form id="forecastForm" class="row g-2 align-items-center mb-3" style="max-width:600px;">
+            <div class="col-6 col-sm-5">
+              <input type="number" step="any" id="forecastLat" class="form-control" placeholder="Latitude" value="-17.9935" required />
+            </div>
+            <div class="col-6 col-sm-5">
+              <input type="number" step="any" id="forecastLon" class="form-control" placeholder="Longitude" value="31.0487" required />
+            </div>
+            <div class="col-12 col-sm-2 d-grid">
+              <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Get</button>
+            </div>
+          </form>
+          <div id="forecastContent" aria-live="polite" aria-atomic="true"></div>
+        </section>
+        <section id="favouritesSection" tabindex="0" aria-label="Favourites section">
+          <h3><i class="fas fa-star"></i> Favourite Locations</h3>
+          <form id="addFavForm" class="row g-2 mb-3" style="max-width:450px;">
+            <div class="col-5">
+              <input type="text" class="form-control" id="favName" placeholder="Location Name" aria-label="Favourite location input" />
+            </div>
+            <div class="col-3">
+              <input type="number" step="any" class="form-control" id="favLat" placeholder="Latitude" />
+            </div>
+            <div class="col-3">
+              <input type="number" step="any" class="form-control" id="favLon" placeholder="Longitude" />
+            </div>
+            <div class="col-1 d-grid">
+              <button class="btn btn-primary" type="submit" aria-label="Add favourite location">
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+          </form>
+          <ul id="favouritesList" class="list-group" aria-live="polite" aria-atomic="true"></ul>
+        </section>
+        <section id="reportsSection" tabindex="0" aria-label="Reports section">
+          <h3><i class="fas fa-chart-bar"></i> Weather Reports</h3>
+          <div id="reportsContent" class="mt-2"></div>
+        </section>
+        <section id="userGuideSection" tabindex="0" aria-label="User Guide section">
+          <h3><i class="fas fa-question-circle"></i> User Guide</h3>
+          <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#userGuideModal" aria-label="Open user guide">
+            <i class="fas fa-book"></i> Open User Guide
+          </button>
+        </section>
+      </main>
+    </div>
+  </div>
+  <!-- User Guide Modal -->
+  <div class="modal fade" id="userGuideModal" tabindex="-1" aria-labelledby="userGuideModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <form class="modal-content" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="userGuideModalLabel"><i class="fas fa-book"></i> User Guide</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6>Welcome to the weather dashboard!</h6>
+          <ul>
+            <li><b>Current Weather:</b> Enter latitude and longitude to view real-time weather.</li>
+            <li><b>5-Day Forecast:</b> Enter latitude and longitude for a 5-day forecast.</li>
+            <li><b>Favourites:</b> Add, view, and remove your favourite locations with coordinates.</li>
+            <li><b>Reports:</b> Generate and view weather reports with beautiful charts.</li>
+            <li><b>User Guide:</b> Access help anytime.</li>
+          </ul>
+          <hr />
+          <h6>API Info</h6>
+          <ul>
+            <li><b>Open-Meteo Forecast API</b> (no API key required): <a href="https://open-meteo.com/" target="_blank" rel="noopener">https://open-meteo.com/</a></li>
+          </ul>
+          <hr />
+          <h6>Contact</h6>
+          <p>For support, contact <a href="mailto:anomadzore@gmail.com">anomadzore@gmail.com</a> or call +263 78 770 2386</p>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Contact Developer Floating Button -->
+  <button id="contactDevBtn" aria-label="Contact Developer Button" title="Contact Developer">
+    <i class="fab fa-whatsapp"></i>
+  </button>
+  <!-- Contact Developer Modal -->
+  <div class="modal fade" id="contactDevModal" tabindex="-1" aria-labelledby="contactDevModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <form class="modal-content" id="contactDevForm" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title" id="contactDevModalLabel"><i class="fab fa-whatsapp"></i> Contact Developer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Send a message directly to Anold Madzore's WhatsApp:</p>
+          <div class="mb-3">
+            <label for="contactName" class="form-label">Your Name</label>
+            <input type="text" class="form-control" id="contactName" placeholder="Enter your name" required aria-describedby="contactNameHelp" />
+            <div class="invalid-feedback">Please enter your name.</div>
+          </div>
+          <div class="mb-3">
+            <label for="contactMessage" class="form-label">Message</label>
+            <textarea class="form-control" id="contactMessage" rows="4" placeholder="Write your message here" required aria-describedby="contactMessageHelp"></textarea>
+            <div class="invalid-feedback">Please enter a message.</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success" aria-label="Send message">
+            <i class="fas fa-paper-plane"></i> Send
+          </button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- MY JAVASCRIPT -->
+  <script src='js.js'></script>
+</body>
+</html>
